@@ -15,7 +15,7 @@
  $get_array = array_combine($labels, $get_array);  //join arrays (key->value)
 
  $query_selection = "";
- $url_from_get_array = "grid.php?";
+ $url_from_get_array = "grid_multi.php?";
  foreach($get_array as $key => $value){
      $url_from_get_array .= "$key=$value&";
      if($value != "any"){
@@ -106,21 +106,19 @@
     $options .= "</select>";
  }
  
- // images 
- $images = array();
- foreach($rows as $row){
-	 $images[] = $row[$col_id[0]];
- }
+// images 
+$images = array();
+foreach($rows as $row){
+     $images[] = $row[$col_id[0]];
+}
 
- //dynamic form control for labels visualization and editing
- $lab_form = "";
- foreach($labels as $label){
-      $lab_form .= "<label>" . $label . "</label>";
-      $lab_form .= "<input type=" . "text" . " name=" . $label . " id=" . $label . " class=" . "form-control" . " />";
-      $lab_form .= "<br />";
- }
-
-
+//dynamic form control for labels visualization and editing
+$lab_form = "";
+foreach($labels as $label){
+     $lab_form .= "<label>" . $label . "</label>";
+     $lab_form .= "<input type=" . "text" . " name=" . $label . " id=" . $label . " class=" . "form-control" . " />";
+     $lab_form .= "<br />";
+}
  ?>  
 
 <!DOCTYPE html>
@@ -131,6 +129,10 @@
      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />  
      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
   <style>
+  .imgActive{
+     border: solid 3px red;
+  }
+
   .box
   {
    max-width:600px;
@@ -144,14 +146,15 @@
    <br />
    <h3 style="text-align:center">Label Fixer</h3>
 
+   <?php $single_url = str_replace("grid_multi.php","grid.php","$new_url_from_get_array"); ?>
+
    <?php $download = "export_" . $table_name . "_" . date('Y-m-d-H-i') . ".csv";?>
    <a href="exportData.php" download= <?php echo $download; ?> class="btn btn-success pull-right">Save to csv</a>
 
    <a href="index.php" class="btn btn-danger pull-right">Home</a>
 
-   <?php $muli_url = str_replace("grid.php","grid_multi.php","$new_url_from_get_array"); ?>
-   <a href= <?php echo $muli_url; ?> class="btn btn-info pull-right">Multi</a>
-                    
+   <a href= <?php echo $single_url; ?> class="btn btn-info pull-right">Single</a>
+   
    <br />
    <div class="row">
      <div class="col-md-10">
@@ -234,9 +237,9 @@
    $id_cont = 0;?>
    <?php for($id = 0; $id < count($images); $id++){
         $id_cont++;?>
-      
-      <td><input type="image" src="<?php echo $images[$id];?>" id="<?php echo $images[$id];?>" data-toggle="modal" data-target="#add_data_Modal" class="edit_data" onclick="AjaxResponse()" alt=''/></td>
-
+     
+      <td><input type="image" src="<?php echo $images[$id];?>" id="<?php echo $images[$id];?>"  onclick="setFormImage(this.id)" alt=''/></td>
+  
       <?php if((($id_cont / $line) - $line_cont) == 0){?>
          </tr>
          <?php $line_cont = $line_cont + 1;
@@ -253,7 +256,9 @@
  
  </table>  
  </div>
-
+ <form name="imageSubmit" id="imageSubmit" >
+    <input type="button" value="View Selected" data-target="#add_data_Modal" class="edit_data"/>
+</form>
 </body>
 </html>
 
@@ -269,10 +274,6 @@
                      <form method="post" id="insert_form">
                          <div class="container-fluid">
 				     <div class="row">
-					<div class="col-md-4 ml-auto">
-					<img class="img-responsive" src="" width="100%" height="auto" alt=""/>
-					</div>
-				     
 					<div class="col-md-6 ml-auto">
                           
                               <?php echo $lab_form; ?>
@@ -284,7 +285,7 @@
                           <div class="text-right">
                          <input type="submit" name="insert" id="insert" value="Insert" class="btn btn-success" /> 
                          </div>
-                          <input type="hidden" name="img_id" id="img_id" />
+                          <input type="hidden" name="img_id" id="img_id" />  
                             
                      </form>  
                 </div>  
@@ -304,6 +305,29 @@ scrollingElement = (document.scrollingElement || document.body)
 function scrollToBottom () {
    scrollingElement.scrollTop = scrollingElement.scrollHeight;
 }
+function setFormImage(id) {
+     
+         
+    if (id != '' && !document.getElementById('input_'+id)) {
+        var img = document.createElement('input');
+        img.type = 'hidden';
+        img.id = 'input_'+id;
+        img.name = 'images[]';
+        img.value = id;
+          
+        document.imageSubmit.appendChild(img);
+    }
+
+    else if (id != '' && document.getElementById('input_'+id)) {
+          
+        document.imageSubmit.removeChild(document.getElementById('input_'+id));
+    }
+}
+
+$('input[type="image"]').on("click",
+            function(){
+                $(this).toggleClass("imgActive");
+            });
 
  $(document).ready(function(){ 
    $('#add').click(function(){  
@@ -311,41 +335,48 @@ function scrollToBottom () {
            $('#insert_form')[0].reset();  
       });
 
-     $('#add_data_Modal').on('show.bs.modal', function (e) {
-            var image = $(e.relatedTarget).attr('src');
-            $(".img-responsive").attr("src", image);
-        });
 
-   $(document).on('click', '.edit_data', function(){ 
-     
-           var img_id = $(this).attr("id");           
-           
-           $.ajax({  
-                url:"fetch.php",  
-                method:"POST",  
-                data:{img_id:img_id},  
-                dataType:"json",  
-                success:function(data){                     
-                    $('#insert_form').find(':input').each(function () {
-                         var temp = this.id;                    
-                         jQuery.each(data, function(k, v) {
-                              if (temp == k){
-                                   $('#'+temp).val(v);
-                              }                         
+   $(document).on('click', '.edit_data', function(event){ 
+
+           event.preventDefault();  
+           var img_id = [];       
+           $('#imageSubmit').find(':input').each(function () {
+                img_id.push(this.value);
+           });
+           if(img_id.length == 1)  
+           {  
+                alert("You must select at least one image!"); 
+                $('#add_data_Modal').modal('hide'); 
+           }else{   
+               var ids = JSON.stringify(img_id);        
+               $.ajax({  
+                    url:"fetch_multi.php",  
+                    method:"POST",  
+                    data:{ids:ids},  
+                    dataType:"json",  
+                    success:function(data){  
+                         $('#insert_form').find(':input').each(function () {
+                              var temp = this.id;                    
+                              jQuery.each(data, function(k, v) {
+                                   if (temp == k){
+                                        $('#'+temp).val(v);
+                                   }                         
+                              });
                          });
-                    });
-                       
-                    $('#img_id').val(img_id);  
-                    $('#insert').val("Update");  
-                    $('#add_data_Modal').modal('show');  
-                }  
-           });  
+                         
+                         $('#img_id').val(ids);  
+                         $('#insert').val("Update");  
+                         $('#add_data_Modal').modal('show');
+                         
+                    }  
+               });
+           }  
       });
       
       $('#insert_form').on("submit", function(event){  
            event.preventDefault();  
            $.ajax({  
-               url:"insert.php",  
+               url:"insert_multi.php",  
                method:"POST",  
                data:$('#insert_form').serialize(),  
                beforeSend:function(){  

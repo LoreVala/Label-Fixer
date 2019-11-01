@@ -15,7 +15,8 @@
       }  
       $post_array = array_combine($labels, $post_array);  //join arrays (key->value)
 
-      $img_id = mysqli_real_escape_string($connect, $_POST["img_id"]);  
+      $ids = json_decode($_POST["img_id"]); 
+      $ids = array_slice($ids, 1, count($ids)); // remove first id 
 
 
       $query = "UPDATE $table_name SET ";
@@ -30,10 +31,14 @@
         }
       }
       $query = substr($query, 0, -2);
-      $query .= " WHERE $image = '".$img_id."' ";
+      $query .= " WHERE ";
+      foreach($ids as $img_id){
+        $query .= "$image = '".$img_id."' OR ";
+      }
+      $query = substr($query, 0, -4);
       
     
-    $result = mysqli_query($connect, $query);
+      $result = mysqli_query($connect, $query);
  }  
  ?>
  

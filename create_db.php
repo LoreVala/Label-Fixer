@@ -71,7 +71,6 @@ $total = $row->num_rows;
 
 $_SESSION['file'] = $table;
 $_SESSION['columns'] = $column;
-$_SESSION['total_rows'] = $total;
 
 echo json_encode($output);
 
