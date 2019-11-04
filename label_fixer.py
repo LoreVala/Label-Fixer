@@ -89,4 +89,6 @@ new_df = labels_df.copy()
 
 new_df.insert(loc=0, column='Image', value=img_path)
 
+df.insert(1, 'is_valid', 1)
+
 new_df.to_csv(final_csv_path, index=False)
