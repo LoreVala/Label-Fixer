@@ -2,6 +2,7 @@ from PIL import Image
 import os
 import pandas as pd
 import argparse
+import webbrowser
 
 '''
     Example usage: on the test set of OpenCXR-imagesorter project
@@ -38,7 +39,7 @@ args = vars(ap.parse_args())
 
 df_path = args["path"]
 
-df_name = df_path.split('/')[-1]
+df_name = os.path.basename(df_path)
 
 img_column = int(args["image_column"])
 
@@ -92,3 +93,5 @@ new_df.insert(loc=0, column='Image', value=img_path)
 df.insert(1, 'is_valid', 1)
 
 new_df.to_csv(final_csv_path, index=False)
+
+webbrowser.open('http://localhost/projects/label_fixer/index.php') 
