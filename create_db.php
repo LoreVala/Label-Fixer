@@ -43,7 +43,7 @@ if($return){
 }
 
 // create dataqbase 
-$conn = mysqli_connect("localhost","root","","label_fixer");
+$conn = mysqli_connect("localhost","root","","test");
 $query = "TRUNCATE TABLE $table";
 $result = mysqli_query($conn, $query);
 

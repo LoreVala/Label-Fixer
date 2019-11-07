@@ -13,7 +13,7 @@
 
  $id = $_POST["img_id"];
  
- $connect = mysqli_connect("localhost", "root", "", "label_fixer");   
+ $connect = mysqli_connect("localhost", "root", "", "test");   
  $query = "SELECT * FROM  $table_name WHERE $image = '".$id."' ";  
  $result = mysqli_query($connect, $query);  
  $row = mysqli_fetch_array($result); 

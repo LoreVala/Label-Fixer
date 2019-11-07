@@ -76,7 +76,7 @@ json_data = {}
 json_data['csv_file'] = df_name
 json_data['csv_name'] = os.path.splitext(df_name)[0]
 json_data['output_path'] = final_path
-json_data['sql_path'] = "C:/xampp/mysql/data/label_fixer/"
+json_data['sql_path'] = "C:/xampp/mysql/data/test/"
 json_data['columns'] = []
 columns = new_df.columns
 for col in columns:

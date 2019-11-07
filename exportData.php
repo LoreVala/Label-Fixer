@@ -10,7 +10,7 @@ session_start();
  if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
  if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
 
-$connect = mysqli_connect("localhost", "root", "", "label_fixer"); 
+$connect = mysqli_connect("localhost", "root", "", "test"); 
 $allData = "";
 $query = "SELECT * FROM $table_name";
     

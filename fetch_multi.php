@@ -16,7 +16,7 @@
  //initialize the array ($label => $val) with the first id
  $get_val = array();
  $edit_array = array();
- $connect = mysqli_connect("localhost", "root", "", "label_fixer");   
+ $connect = mysqli_connect("localhost", "root", "", "test");   
  $query = "SELECT * FROM  $table_name WHERE $image = '".$ids[0]."' ";  
  $result = mysqli_query($connect, $query);  
  $row = mysqli_fetch_array($result); 

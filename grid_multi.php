@@ -9,7 +9,7 @@
  if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
  if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
 
- $connect = mysqli_connect("localhost", "root", "", "label_fixer"); // sql connection to label_fixer database
+ $connect = mysqli_connect("localhost", "root", "", "test"); // sql connection to label_fixer database
 
  // get varibles from url if they are set (for filtering purpose)
  $get_array = array();
