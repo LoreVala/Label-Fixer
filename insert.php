@@ -57,9 +57,21 @@
     $comm = "rm -f $sql_path"."$file";
     $comm .= " && ";
     $comm .= "mv -f $sql_path"."$temp_file $sql_path"."$file";
-    exec($comm);
+    exec($comm, $o, $return);
+    if($return){
+      $sql_2 = str_replace("/","\\","$sql_path");
+      $comm = "del /f $sql_2"."$file";
+      $comm .= " && ";
+      $comm .= "copy /y $sql_2"."$temp_file $sql_2"."$file";
+      exec($comm);
+    }
     $comm = "cp -f $sql_path"."$file $csv_path"."$file";
-    exec($comm);
+    exec($comm, $o, $return);
+    if($return){
+      $out_2 = str_replace("/","\\","$csv_path");
+      $sql_2 = str_replace("/","\\","$sql_path");
+      exec("copy /y $sql_2"."$file $out_2"."$file");
+    }
     }  
  ?>
  
