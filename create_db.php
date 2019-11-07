@@ -35,7 +35,12 @@ foreach ($json_a as $index => $value) {
 }
 	
 // create a copy of the csv file in the mysql folder to ensure import
-exec("cp -f $output_path"."$file $sql_path"."$file");
+exec("cp -f $output_path"."$file $sql_path"."$file", $o, $return);
+if($return){
+	$out_2 = str_replace("/","\\","$output_path");
+	$sql_2 = str_replace("/","\\","$sql_path");
+	exec("copy /y $out_2"."$file $sql_2"."$file");
+}
 
 // create dataqbase 
 $conn = mysqli_connect("localhost","root","","label_fixer");
