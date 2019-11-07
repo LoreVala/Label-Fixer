@@ -1,0 +1,55 @@
+{
+	"init_csv_path":"Y:/projects/OpenCXR-imagesorter/processed_data/test_private.csv",
+	
+	"png_data_dir":"Y:/projects/OpenCXR-imagesorter/processed_data/test_png/",
+	
+	"image_name_column":"new_img_name",
+	
+	"thumbnail_out_dir":"C:/xampp/htdocs/projects/final3/thumbnails/",
+	
+	"size_width":"46",
+	
+	"output_path":"C:/Users/HP/Desktop/sketch/",
+	
+	"editable_columns_and_labels":{
+		"img_type":{
+			"0":"frontal",
+			"1":"lateral"
+		},
+		"rotation":{
+			"0":"0 clockwise",
+			"1":"90 clockwise",
+			"2":"180 clockwise",
+			"3":"270 clockwise"
+		},
+		"inversion":{
+			"0":"normal",
+			"1":"inverted"
+		},
+		"lateral_flip":{
+			"0":"normal",
+			"1":"flipped"
+		},
+		"is_valid":{
+			"0":"not valid",
+			"1":"valid"
+		}
+	},
+	
+	"filterable_columns_and_labels":{
+		"img_type":{
+			"0":"frontal",
+			"1":"lateral"
+		},
+		"inversion":{
+			"0":"normal",
+			"1":"inverted"
+		},
+		"rotation":{
+			"0":"0 clockwise",
+			"1":"90 clockwise",
+			"2":"180 clockwise",
+			"3":"270 clockwise"
+		}
+	}
+}

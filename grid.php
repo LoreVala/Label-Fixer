@@ -1,19 +1,28 @@
 <?php  
+
+// get session variables
  session_start();
- if(isset($_SESSION['file'])) $table_name=$_SESSION['file'];
+ if(isset($_SESSION['table'])) $table_name=$_SESSION['table'];
  if(isset($_SESSION['columns'])) $col_id= $_SESSION['columns'];
+ if(isset($_SESSION['output_path'])) $csv_path=$_SESSION['output_path'];
+ if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
+ if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
+ if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
 
- $connect = mysqli_connect("localhost", "root", "", "test"); 
+ $connect = mysqli_connect("localhost", "root", "", "label_fixer"); 
 
+ // get varibles from url if they are set (for filtering purpose)
  $get_array = array();
- for($i = 1; $i < count($col_id); $i++){
-    if (isset($_GET[$col_id[$i]])){
-        $get_array[] = $_GET[$col_id[$i]];
+ $filter_array = array();
+ foreach($filterable_columns as $filter => $values){
+     $filter_array[] = $filter;
+    if (isset($_GET[$filter])){
+        $get_array[] = $_GET[$filter];
        }else{ $get_array[] = "any";}
  }
- $labels = array_slice($col_id, 1, count($col_id));
- $get_array = array_combine($labels, $get_array);  //join arrays (key->value)
+ $get_array = array_combine($filter_array, $get_array);  //join arrays (key->value)
 
+ // construct reference url from the variable and construct query to retrieve only data from filters
  $query_selection = "";
  $url_from_get_array = "grid.php?";
  foreach($get_array as $key => $value){
@@ -69,7 +78,7 @@
  $options = "";
  $new_url_from_get_array = $url_from_get_array . $first;
  $log = array();
- foreach($labels as $label){
+ foreach($filterable_columns as $label => $label_values){
     $query = "SELECT DISTINCT($label) FROM $table_name";
     $result = mysqli_query($connect, $query);
     $uniques = array();
@@ -77,31 +86,35 @@
        $uniques[] = preg_replace("/\r/", '', $row[0]); // remove any special character
     }
     array_unshift($uniques,"any");
-
-    $log[] = $uniques;
-
-    //if (this.options[this.selectedIndex].value) window.location.href=this.options[this.selectedIndex].value"
+   
     $options .= "<label>" . $label . "</label>";
     $options .= "<select onchange=" . "window.location=this.value" . ">";
-    //$options .= "<option value=any>any</option>"; foreach($uniques as $unique){
+    
     $track_ref = array();
     $track_val = array();
     foreach($get_array as $key => $value){
         if($key == $label){
             $others = array_diff($uniques, array($value));
             $ref = str_replace("$key=$value","$key=$value","$new_url_from_get_array");
-            $options .= "<option value=" . $ref . ">" .$value . "</option>";
+            if($value == "any"){
+               $options .= "<option value=" . $ref . ">" .$value . "</option>";
+            } else {
+               $options .= "<option value=" . $ref . ">" .$label_values[$value] . "</option>";
+            }
             array_push($track_ref, $ref);
             array_push($track_val, $value);
 
             foreach($others as $unique){
                 $ref = str_replace("$key=$value","$key=$unique","$new_url_from_get_array");
-                $options .= "<option value=" . $ref . ">" .$unique . "</option>";
+                if($unique == "any"){
+                    $options .= "<option value=" . $ref . ">" .$unique . "</option>";
+                } else {
+                    $options .= "<option value=" . $ref . ">" .$label_values[$unique] . "</option>";
+                }
                 array_push($track_ref, $ref);
                 array_push($track_val, $unique);
             }
         }
-        //$options .= "<option value=" . $unique . ">" .$unique . "</option>";
     }
     $options .= "</select>";
  }
@@ -113,15 +126,19 @@
  }
 
  //dynamic form control for labels visualization and editing
- $lab_form = "";
- foreach($labels as $label){
-      $lab_form .= "<label>" . $label . "</label>";
-      $lab_form .= "<input type=" . "text" . " name=" . $label . " id=" . $label . " class=" . "form-control" . " />";
-      $lab_form .= "<br />";
+ $edit_form = "";
+ foreach($editables_columns as $label => $label_values){
+      $edit_form .= "<div>";
+      $edit_form .= "<label>" . $label . "</label>";
+      $edit_form .= "<select name=".$label." id="."sel_".$label.">";
+      foreach($label_values as $key => $value){
+          $edit_form .= "<option value= " . $key . ">".$value."</option>";
+      }
+      $edit_form .= "</select>";
+      $edit_form .= "</div>";
  }
 
-
- ?>  
+?>  
 
 <!DOCTYPE html>
 <html>
@@ -149,8 +166,8 @@
 
    <a href="index.php" class="btn btn-danger pull-right">Home</a>
 
-   <?php $muli_url = str_replace("grid.php","grid_multi.php","$new_url_from_get_array"); ?>
-   <a href= <?php echo $muli_url; ?> class="btn btn-info pull-right">Multi</a>
+   <?php $multi_url = str_replace("grid.php","grid_multi.php","$new_url_from_get_array"); ?>
+   <a href= <?php echo $multi_url; ?> class="btn btn-info pull-right">Multi</a>
                     
    <br />
    <div class="row">
@@ -275,7 +292,7 @@
 				     
 					<div class="col-md-6 ml-auto">
                           
-                              <?php echo $lab_form; ?>
+                              <?php echo $edit_form; ?>
 
                           </div>
 				      
@@ -284,7 +301,7 @@
                           <div class="text-right">
                          <input type="submit" name="insert" id="insert" value="Insert" class="btn btn-success" /> 
                          </div>
-                          <input type="hidden" name="img_id" id="img_id" />
+                          <input type="hidden" name="i_m_g_i_d" id="i_m_g_i_d" />
                             
                      </form>  
                 </div>  
@@ -325,17 +342,11 @@ function scrollToBottom () {
                 method:"POST",  
                 data:{img_id:img_id},  
                 dataType:"json",  
-                success:function(data){                     
-                    $('#insert_form').find(':input').each(function () {
-                         var temp = this.id;                    
-                         jQuery.each(data, function(k, v) {
-                              if (temp == k){
-                                   $('#'+temp).val(v);
-                              }                         
-                         });
-                    });
-                       
-                    $('#img_id').val(img_id);  
+                success:function(data){                                       
+                    jQuery.each(data, function(k, v) {
+                         $('#sel_'+k+' option[value='+v+']').prop('selected', true);                        
+                    });                       
+                    $('#i_m_g_i_d').val(img_id);  
                     $('#insert').val("Update");  
                     $('#add_data_Modal').modal('show');  
                 }  

@@ -29,7 +29,7 @@
      <label>Select CSV File</label>
     </div>  
                 <div class="col-md-4">  
-                    <input type="file" name="csv_file" id="csv_file" accept=".csv" style="margin-top:15px;" />
+                    <input type="file" name="csv_file" id="csv_file" accept=".json" style="margin-top:15px;" />
                 </div>  
                 <div class="col-md-5">  
                     <input type="submit" name="upload" id="upload" value="Upload" style="margin-top:10px;" class="btn btn-info" />
@@ -64,16 +64,12 @@ $(document).ready(function(){
 
        if(data){
         
-        var html = '<form action="grid.php" method="POST">'
+        var html = '<form action="grid_multi.php" method="POST">'
         html += '<strong>Data from '+data.file+' Imported</strong>'; 
         html += '<input type="hidden" name="file" value="'+data.file+'" />'
-        html += '<input type="hidden" name="columns" value="'+data.columns+'" />'
         html += '<input type="submit" value="Visualize" />'
         html += '</form>'
        }
-    
-
-
     
     $('#csv_file_data').html(html);
     $('#upload_csv')[0].reset();
