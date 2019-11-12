@@ -2,19 +2,14 @@
  //fetch.php  
 
  session_start();
- if(isset($_SESSION['table'])) $table_name=$_SESSION['table'];
- if(isset($_SESSION['columns'])) $col_id= $_SESSION['columns'];
- if(isset($_SESSION['output_path'])) $csv_path=$_SESSION['output_path'];
- if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
+ if(isset($_SESSION['table'])) $table=$_SESSION['table'];
  if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
- if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
-
- $image = $col_id[0];
+ if(isset($_SESSION['image_column'])) $image_column= $_SESSION['image_column'];
 
  $id = $_POST["img_id"];
  
  $connect = mysqli_connect("localhost", "root", "", "test");   
- $query = "SELECT * FROM  $table_name WHERE $image = '".$id."' ";  
+ $query = "SELECT * FROM  $table WHERE $image_column = '".$id."' ";  
  $result = mysqli_query($connect, $query);  
  $row = mysqli_fetch_array($result); 
  

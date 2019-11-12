@@ -26,7 +26,7 @@
    <form id="upload_csv" method="post" enctype="multipart/form-data">
     <div class="col-md-3">
      <br />
-     <label>Select CSV File</label>
+     <label>Select JSON File</label>
     </div>  
                 <div class="col-md-4">  
                     <input type="file" name="csv_file" id="csv_file" accept=".json" style="margin-top:15px;" />
@@ -65,7 +65,7 @@ $(document).ready(function(){
        if(data){
         
         var html = '<form action="grid_multi.php" method="POST">'
-        html += '<strong>Data from '+data.file+' Imported</strong>'; 
+        html += '<strong>Data from '+data.file+' Imported and'+data.boh+'</strong>'; 
         html += '<input type="hidden" name="file" value="'+data.file+'" />'
         html += '<input type="submit" value="Visualize" />'
         html += '</form>'

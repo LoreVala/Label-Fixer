@@ -1,14 +1,25 @@
 <?php  
  session_start();
- if(isset($_SESSION['table'])) $table_name=$_SESSION['table'];
- if(isset($_SESSION['columns'])) $col_id= $_SESSION['columns'];
- if(isset($_SESSION['output_path'])) $csv_path=$_SESSION['output_path'];
+ if(isset($_SESSION['table'])) $table=$_SESSION['table'];
+ if(isset($_SESSION['columns'])) $columns= $_SESSION['columns'];
+ if(isset($_SESSION['image_column'])) $image_column= $_SESSION['image_column'];
+ if(isset($_SESSION['path_to_csv_file'])) $path_to_csv_file=$_SESSION['path_to_csv_file'];
  if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
  if(isset($_SESSION['file'])) $file= $_SESSION['file'];
  if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
- if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
  
- $image = $col_id[0];
+ /*
+$_SESSION['table'] = $table;
+$_SESSION['columns'] = $column;
+$_SESSION['path_to_csv_file'] = $path_to_csv_file;
+$_SESSION['file'] = $file;
+$_SESSION['sql_path'] = $sql_path;
+$_SESSION['editables_columns'] = $editables_columns;
+$_SESSION['filterable_columns'] = $filterable_columns;
+$_SESSION['image_column'] = $images;
+$_SESSION['rel_path_to_thumb'] = $rel_path_to_thumb;
+$_SESSION['images_full_path'] = $images_full_path;
+ */
 
  $connect = mysqli_connect("localhost", "root", "", "test");  
  if(!empty($_POST))  
@@ -25,7 +36,7 @@
       $ids = array_slice($ids, 1, count($ids)); // remove first id 
 
 
-      $query = "UPDATE $table_name SET ";
+      $query = "UPDATE $table SET ";
 
       foreach($post_array as $key => $value){
         if($value != "_"){
@@ -39,7 +50,7 @@
       $query = substr($query, 0, -2);
       $query .= " WHERE ";
       foreach($ids as $img_id){
-        $query .= "$image = '".$img_id."' OR ";
+        $query .= "$image_column = '".$img_id."' OR ";
       }
       $query = substr($query, 0, -4);
       
@@ -48,20 +59,20 @@
 
       // save updated csv to temp file
     
-      $temp_file = $table_name . "_temp.csv";
+      $temp_file = $table . "_temp.csv";
       $query = "SELECT ";
-      foreach($col_id as $col){
+      foreach($columns as $col){
         $query .= "'".$col."', ";
       }
       $query = substr($query, 0, -2);
-      $query .= " UNION ALL SELECT * FROM $table_name INTO OUTFILE '".$temp_file."' ";
+      $query .= " UNION ALL SELECT * FROM $table INTO OUTFILE '".$temp_file."' ";
       $query .= "FIELDS TERMINATED BY '".","."' LINES TERMINATED BY '"."\n"."';";
       $result = mysqli_query($connect, $query);
 
       // delete previous csv file and rename temp 
-	  $comm = "rm -f $sql_path"."$file";
-	  exec($comm, $o, $return);
-	  if($return){
+	    $comm = "rm -f $sql_path"."$file";
+	    exec($comm, $o, $return);
+	    if($return){
         $sql_2 = str_replace("/","\\","$sql_path");
         exec("del /f $sql_2"."$file");
 		}
@@ -73,12 +84,12 @@
         $comm = "copy /y $sql_2"."$temp_file $sql_2"."$file";
         exec($comm);
       }
-      $comm = "cp -f $sql_path"."$file $csv_path"."$file";
+      $comm = "cp -f $sql_path"."$file $path_to_csv_file";
       exec($comm, $o, $return);
       if($return){
-        $out_2 = str_replace("/","\\","$csv_path");
+        $f2 = str_replace("/","\\","$path_to_csv_file");
         $sql_2 = str_replace("/","\\","$sql_path");
-        exec("copy /y $sql_2"."$file $out_2"."$file");
+        exec("copy /y $sql_2"."$file $f2");
       }
    }  
  ?>

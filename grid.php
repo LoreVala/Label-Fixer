@@ -1,13 +1,16 @@
 <?php  
 
 // get session variables
- session_start();
- if(isset($_SESSION['table'])) $table_name=$_SESSION['table'];
- if(isset($_SESSION['columns'])) $col_id= $_SESSION['columns'];
- if(isset($_SESSION['output_path'])) $csv_path=$_SESSION['output_path'];
- if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
- if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
- if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
+session_start();
+if(isset($_SESSION['table'])) $table=$_SESSION['table'];
+if(isset($_SESSION['columns'])) $columns= $_SESSION['columns'];
+if(isset($_SESSION['path_to_csv_file'])) $csv_path=$_SESSION['path_to_csv_file'];
+if(isset($_SESSION['file'])) $file=$_SESSION['file'];
+if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
+if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
+if(isset($_SESSION['filterable_columns'])) $filterable_columns= $_SESSION['filterable_columns'];
+if(isset($_SESSION['image_column'])) $image_column= $_SESSION['image_column'];
+if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path_to_thumb'];
 
  $connect = mysqli_connect("localhost", "root", "", "test"); 
 
@@ -37,7 +40,7 @@
  }
  $url_from_get_array .= "page=";
  $query_selection = substr($query_selection, 0, -4);
- $query = "SELECT COUNT(*) FROM $table_name ";
+ $query = "SELECT COUNT(*) FROM $table ";
 
  if($query_selection != ""){
      $query .= "WHERE ";
@@ -63,7 +66,7 @@
  
 
  $rows = array();
- $query = "SELECT * FROM $table_name "; //WHERE img_type = $type LIMIT $start, $limit"; 
+ $query = "SELECT * FROM $table "; //WHERE img_type = $type LIMIT $start, $limit"; 
  if($query_selection != ""){
      $query .= "WHERE ";
  }
@@ -79,7 +82,7 @@
  $new_url_from_get_array = $url_from_get_array . $first;
  $log = array();
  foreach($filterable_columns as $label => $label_values){
-    $query = "SELECT DISTINCT($label) FROM $table_name";
+    $query = "SELECT DISTINCT($label) FROM $table";
     $result = mysqli_query($connect, $query);
     $uniques = array();
     while($row = mysqli_fetch_row($result)){
@@ -122,7 +125,8 @@
  // images 
  $images = array();
  foreach($rows as $row){
-	 $images[] = $row[$col_id[0]];
+     $basename = basename($row[$image_column], ".png");
+     $images[] =  join(DIRECTORY_SEPARATOR, array($rel_path_to_thumb, $basename.".png"));
  }
 
  //dynamic form control for labels visualization and editing
@@ -161,7 +165,7 @@
    <br />
    <h3 style="text-align:center">Label Fixer</h3>
 
-   <?php $download = "export_" . $table_name . "_" . date('Y-m-d-H-i') . ".csv";?>
+   <?php $download = "export_" . $table . "_" . date('Y-m-d-H-i') . ".csv";?>
    <a href="exportData.php" download= <?php echo $download; ?> class="btn btn-success pull-right">Save to csv</a>
 
    <a href="index.php" class="btn btn-danger pull-right">Home</a>
@@ -252,7 +256,7 @@
    <?php for($id = 0; $id < count($images); $id++){
         $id_cont++;?>
       
-      <td><input type="image" src="<?php echo $images[$id];?>" id="<?php echo $images[$id];?>" data-toggle="modal" data-target="#add_data_Modal" class="edit_data" onclick="AjaxResponse()" alt=''/></td>
+      <td><input type="image" src="<?php echo $images[$id];?>" id="<?php echo basename($images[$id], ".png");?>" data-toggle="modal" data-target="#add_data_Modal" class="edit_data" onclick="AjaxResponse()" alt=''/></td>
 
       <?php if((($id_cont / $line) - $line_cont) == 0){?>
          </tr>

@@ -11,21 +11,21 @@ if(!empty($_FILES['csv_file']['name']))
  $json_a = json_decode($string, true);
 };
 foreach ($json_a as $index => $value) {
-	if($index == "csv_file"){
-		$file =  $value;
-	}
-	if($index == "csv_name"){
-		$table =  $value;
-	}
-	if($index == "output_path"){
-		$output_path =  $value;
+	if($index == "path_to_csv_file"){
+		$path_to_csv_file =  $value;
 	}
 	if($index == "sql_path"){
 		$sql_path =  $value;
 	}
 	if($index == "columns"){
-		$column =  $value;
-	}
+		$columns =  $value;
+    }
+    if($index == "image_column"){
+		$image_column =  $value;
+    }
+    if($index == "rel_path_to_thumb"){
+		$rel_path_to_thumb =  $value;
+    }
     if($index == "editables_columns"){
 		$editables_columns =  $value;
 	}
@@ -33,14 +33,18 @@ foreach ($json_a as $index => $value) {
 		$filterable_columns =  $value;
 	}
 }
+
+$table = basename($path_to_csv_file, ".csv");
+$file = basename($path_to_csv_file);
 	
 // create a copy of the csv file in the mysql folder to ensure import
-exec("cp -f $output_path"."$file $sql_path"."$file", $o, $return);
+exec("cp -f $path_to_csv_file $sql_path"."$file", $o, $return);
 if($return){
-	$out_2 = str_replace("/","\\","$output_path");
+	$f2 = str_replace("/","\\","$path_to_csv_file");
 	$sql_2 = str_replace("/","\\","$sql_path");
-	exec("copy /y $out_2"."$file $sql_2"."$file");
-}
+	exec("copy /y $f2 $sql_2"."$file");
+};
+
 
 // create dataqbase 
 $conn = mysqli_connect("localhost","root","","test");
@@ -50,11 +54,11 @@ $result = mysqli_query($conn, $query);
 if(empty($result)){
 	$query = "CREATE TABLE $table ( ";
 								
-	for ($i=0; $i<count($column); $i++)
+	for ($i=0; $i<count($columns); $i++)
 		{
-			$query .= "$column[$i]" . " " . "VARCHAR(255) NOT NULL";
+			$query .= "$columns[$i]" . " " . "VARCHAR(255) NOT NULL";
 			$query .= ", ";
-			if($i == count($column)-1){
+			if($i == count($columns)-1){
 				$query = rtrim($query, ", ");
 			}
 		}
@@ -71,12 +75,14 @@ $result = mysqli_query($conn, $query);
 
 // send important variables to session to be accessible in ther pages
 $_SESSION['table'] = $table;
-$_SESSION['columns'] = $column;
-$_SESSION['output_path'] = $output_path;
+$_SESSION['columns'] = $columns;
+$_SESSION['path_to_csv_file'] = $path_to_csv_file;
 $_SESSION['file'] = $file;
 $_SESSION['sql_path'] = $sql_path;
 $_SESSION['editables_columns'] = $editables_columns;
 $_SESSION['filterable_columns'] = $filterable_columns;
+$_SESSION['image_column'] = $image_column;
+$_SESSION['rel_path_to_thumb'] = $rel_path_to_thumb;
 
 $output = array(
 	'file' => $table
