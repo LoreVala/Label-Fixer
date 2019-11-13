@@ -65,7 +65,7 @@ $(document).ready(function(){
        if(data){
         
         var html = '<form action="grid_multi.php" method="POST">'
-        html += '<strong>Data from '+data.file+' Imported and'+data.boh+'</strong>'; 
+        html += '<strong>Data from '+data.file+' Imported  </strong>'; 
         html += '<input type="hidden" name="file" value="'+data.file+'" />'
         html += '<input type="submit" value="Visualize" />'
         html += '</form>'

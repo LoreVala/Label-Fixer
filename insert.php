@@ -51,28 +51,36 @@
     $query .= "FIELDS TERMINATED BY '".","."' LINES TERMINATED BY '"."\n"."';";
     $result = mysqli_query($connect, $query);
 
-    // delete previous csv file and rename temp 
-    $comm = "rm -f $sql_path"."$file";
-    exec($comm, $o, $return);
-    if($return){
-      $sql_2 = str_replace("/","\\","$sql_path");
-      exec("del /f $sql_2"."$file");
-  }
-  
-    $comm = "mv -f $sql_path"."$temp_file $sql_path"."$file";
-    exec($comm, $o, $return);
-    if($return){
-      $sql_2 = str_replace("/","\\","$sql_path");
-      $comm = "copy /y $sql_2"."$temp_file $sql_2"."$file";
-      exec($comm);
-    }
-    $comm = "cp -f $sql_path"."$file $file_path";
-    exec($comm, $o, $return);
-    if($return){
-      $f2 = str_replace("/","\\","$file_path");
-      $sql_2 = str_replace("/","\\","$sql_path");
-      exec("copy /y $sql_2"."$file $f2");
-    }
+    // delete previous csv file 
+	  $comm = "rm -f $sql_path"."$file";
+	  exec($comm, $o, $return);
+	  if($return){
+        $sql_2 = str_replace("/","\\","$sql_path");
+        exec("del /f $sql_2"."$file");
+	  }
+      // rename temp file to output file
+      $comm = "mv -f $sql_path"."$temp_file $sql_path"."$file";
+      exec($comm, $o, $return);
+      if($return){
+        $sql_2 = str_replace("/","\\","$sql_path");
+        $comm = "copy /y $sql_2"."$temp_file $sql_2"."$file";
+        exec($comm);
+      }
+	  // copy the content in the actual output file 
+      $comm = "cp -f $sql_path"."$file $path_to_csv_file";
+      exec($comm, $o, $return);
+      if($return){
+        $f2 = str_replace("/","\\","$path_to_csv_file");
+        $sql_2 = str_replace("/","\\","$sql_path");
+        exec("copy /y $sql_2"."$file $f2");
+      }
+	  // delete temp file 
+      $comm = "rm -f $sql_path"."$temp_file";
+      exec($comm, $o, $return);
+      if($return){
+        $sql_2 = str_replace("/","\\","$sql_path");
+        exec("del /f $sql_2"."$temp_file");
+      }
  }  
  ?>
  

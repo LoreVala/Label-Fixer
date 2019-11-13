@@ -7,19 +7,6 @@
  if(isset($_SESSION['sql_path'])) $sql_path= $_SESSION['sql_path'];
  if(isset($_SESSION['file'])) $file= $_SESSION['file'];
  if(isset($_SESSION['editables_columns'])) $editables_columns=$_SESSION['editables_columns'];
- 
- /*
-$_SESSION['table'] = $table;
-$_SESSION['columns'] = $column;
-$_SESSION['path_to_csv_file'] = $path_to_csv_file;
-$_SESSION['file'] = $file;
-$_SESSION['sql_path'] = $sql_path;
-$_SESSION['editables_columns'] = $editables_columns;
-$_SESSION['filterable_columns'] = $filterable_columns;
-$_SESSION['image_column'] = $images;
-$_SESSION['rel_path_to_thumb'] = $rel_path_to_thumb;
-$_SESSION['images_full_path'] = $images_full_path;
- */
 
  $connect = mysqli_connect("localhost", "root", "", "test");  
  if(!empty($_POST))  
@@ -69,14 +56,14 @@ $_SESSION['images_full_path'] = $images_full_path;
       $query .= "FIELDS TERMINATED BY '".","."' LINES TERMINATED BY '"."\n"."';";
       $result = mysqli_query($connect, $query);
 
-      // delete previous csv file and rename temp 
-	    $comm = "rm -f $sql_path"."$file";
-	    exec($comm, $o, $return);
-	    if($return){
+      // delete previous csv file 
+	  $comm = "rm -f $sql_path"."$file";
+	  exec($comm, $o, $return);
+	  if($return){
         $sql_2 = str_replace("/","\\","$sql_path");
         exec("del /f $sql_2"."$file");
-		}
-    
+	  }
+      // rename temp file to output file
       $comm = "mv -f $sql_path"."$temp_file $sql_path"."$file";
       exec($comm, $o, $return);
       if($return){
@@ -84,12 +71,20 @@ $_SESSION['images_full_path'] = $images_full_path;
         $comm = "copy /y $sql_2"."$temp_file $sql_2"."$file";
         exec($comm);
       }
+	  // copy the content in the actual output file 
       $comm = "cp -f $sql_path"."$file $path_to_csv_file";
       exec($comm, $o, $return);
       if($return){
         $f2 = str_replace("/","\\","$path_to_csv_file");
         $sql_2 = str_replace("/","\\","$sql_path");
         exec("copy /y $sql_2"."$file $f2");
+      }
+	  // delete temp file 
+      $comm = "rm -f $sql_path"."$temp_file";
+      exec($comm, $o, $return);
+      if($return){
+        $sql_2 = str_replace("/","\\","$sql_path");
+        exec("del /f $sql_2"."$temp_file");
       }
    }  
  ?>
