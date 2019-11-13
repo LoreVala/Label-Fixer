@@ -45,6 +45,7 @@
  $result = mysqli_query($connect, $query);
  $row = mysqli_fetch_row($result);
  $total = $row[0];
+ $total_info = "<p align="."left".">".$total." records found</p>";
 
  # Pagination variables
  $limit = 120;
@@ -159,11 +160,15 @@
    width:100%;
    margin: 0 auto;
   }
+  .flex-box {
+  display:flex;
+  justify-content:space-between;
+  } 
   </style>
  </head>
 <body onload="scrollToBottom()">
 <div class="container">
-   <br />
+   
    <h3 style="text-align:center">Label Fixer</h3>
 
    <?php $single_url = str_replace("grid_multi.php","grid.php","$new_url_from_get_array"); ?>
@@ -175,7 +180,7 @@
 
    <a href= <?php echo $single_url; ?> class="btn btn-info pull-right">Single</a>
    
-   <br />
+   
    <div class="row">
      <div class="col-md-10">
           <nav aria-label="Page navigation">
@@ -272,21 +277,18 @@
    <?php  
    }  
    ?>
-   
    </tbody>
- 
- </table>  
- </div>
- <div class="container">
-  <div class="row">
-    <div class="col text-center">
-    <form name="imageSubmit" id="imageSubmit" >
-    <input type="button" value="Edit Selected" data-target="#add_data_Modal" class="edit_data"/>
-     </form>
-    </div>
-  </div>
-  
+ </table> 
+
+ <div class="flex-box">
+ <?php echo $total_info; ?>
+ <form name="imageSubmit" id="imageSubmit" >
+ <input type="button" value="Edit Selected" data-target="#add_data_Modal" class="edit_data" style="float: right;"/>
+ </form>
 </div>
+
+
+ 
  
 </body>
 </html>

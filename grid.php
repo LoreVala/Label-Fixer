@@ -49,6 +49,7 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
  $result = mysqli_query($connect, $query);
  $row = mysqli_fetch_row($result);
  $total = $row[0];
+ $total_info = "<p align="."left".">".$total." records found</p>";
 
  # Pagination variables
  $limit = 120;
@@ -158,6 +159,10 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
    width:100%;
    margin: 0 auto;
   }
+  .flex-box {
+  display:flex;
+  justify-content:space-between;
+  } 
   </style>
  </head>
 <body onload="scrollToBottom()">
@@ -273,7 +278,9 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
    </tbody>
  
  </table>  
- </div>
+ <div class="flex-box">
+ <?php echo $total_info; ?>
+</div>
 
 </body>
 </html>
