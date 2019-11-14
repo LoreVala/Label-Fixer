@@ -77,6 +77,7 @@
  // Select unique combinations of labels
  $options = "";
  $new_url_from_get_array = $url_from_get_array . $first;
+ $url_single = $url_from_get_array . $page;
  $log = array();
  foreach($filterable_columns as $label => $label_values){
     $query = "SELECT DISTINCT($label) FROM $table";
@@ -171,7 +172,7 @@
    
    <h3 style="text-align:center">Label Fixer</h3>
 
-   <?php $single_url = str_replace("grid_multi.php","grid.php","$new_url_from_get_array"); ?>
+   <?php $single_url = str_replace("grid_multi.php","grid.php","$url_single"); ?>
 
    <?php $download = "export_" . $table . "_" . date('Y-m-d-H-i') . ".csv";?>
    <a href="exportData.php" download= <?php echo $download; ?> class="btn btn-success pull-right">Save to csv</a>

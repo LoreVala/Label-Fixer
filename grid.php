@@ -81,6 +81,7 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
  // Select unique combinations of labels
  $options = "";
  $new_url_from_get_array = $url_from_get_array . $first;
+ $url_multi = $url_from_get_array . $page;
  $log = array();
  foreach($filterable_columns as $label => $label_values){
     $query = "SELECT DISTINCT($label) FROM $table";
@@ -175,7 +176,7 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
 
    <a href="index.php" class="btn btn-danger pull-right">Home</a>
 
-   <?php $multi_url = str_replace("grid.php","grid_multi.php","$new_url_from_get_array"); ?>
+   <?php $multi_url = str_replace("grid.php","grid_multi.php","$url_multi"); ?>
    <a href= <?php echo $multi_url; ?> class="btn btn-info pull-right">Multi</a>
                     
    <br />
@@ -317,7 +318,6 @@ if(isset($_SESSION['rel_path_to_thumb'])) $rel_path_to_thumb=$_SESSION['rel_path
                      </form>  
                 </div>  
                 <div class="modal-footer"> 
-                
                 <div class="text-right">
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>  
                      </div>
