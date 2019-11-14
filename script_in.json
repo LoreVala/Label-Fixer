@@ -1,0 +1,39 @@
+{
+	"project_name":"imagesorter",
+	
+	"init_csv_path":"Y:/projects/OpenCXR-imagesorter/processed_data/test_private.csv",
+	
+	"png_data_dir":"Y:/projects/OpenCXR-imagesorter/processed_data/test_png/",
+	
+	"image_name_column":"new_img_name",
+	
+	"size_width":"72",
+	
+	"output_path": "Y:/projects/OpenCXR-imagesorter/label_fixing/lorenzo/lateral_flip/test/",
+	
+	"editable_columns_and_labels":{
+		"lateral_flip":{
+			"0":"spine on right",
+			"1":"spine on left"
+		},
+		"is_valid":{
+			"0":"not valid",
+			"1":"valid"
+		}
+	},
+	
+	"filterable_columns_and_labels":{
+		"lateral_flip":{
+			"0":"not flipped",
+			"1":"flipped"
+		},
+		"img_type":{
+			"0":"frontal",
+			"1":"lateral"
+		},
+		"is_valid":{
+			"0":"not valid",
+			"1":"valid"
+		}
+	}
+}
