@@ -245,6 +245,9 @@
                               <span aria-hidden="true">Next &raquo;</span>
                          </a>
                     </li>
+                    <input id="pn" type="number" min="<?php echo $first?>" max="<?php echo $last?>" 
+                         placeholder="<?php echo $first."/".$last; ?>" required> 
+                    <button onclick="go2Page();">Go</button> 
 
                     <?php echo $options; ?>
                     
@@ -334,6 +337,13 @@
 
  <script>  
 scrollingElement = (document.scrollingElement || document.body)
+function go2Page() 
+{ 
+    var pn = document.getElementById("pn").value; 
+    // Check if pn is between the max and min. 
+  pn = ((pn><?php echo $last; ?>)?<?php echo $last; ?>:((pn<1)?1:pn)); 
+  window.location.href = '<?php echo $url_from_get_array; ?>' + pn; 
+} 
 function scrollToBottom () {
    scrollingElement.scrollTop = scrollingElement.scrollHeight;
 }
