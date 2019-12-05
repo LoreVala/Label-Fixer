@@ -10,7 +10,7 @@
 
  $connect = mysqli_connect("localhost", "root", "", "test"); // sql connection to label_fixer database
 
- // get varibles from url if they are set (for filtering purpose)
+ // get varibles from url if they are set (for filtering and pagination purpose)
  $get_array = array();
  $filter_array = array();
  foreach($filterable_columns as $filter => $values){
@@ -20,6 +20,22 @@
        }else{ $get_array[] = "any";}
  }
  $get_array = array_combine($filter_array, $get_array);  //join arrays (key->value)
+
+ # number of rows of the image grid
+ if (isset($_GET['grid_r'])){
+      $grid_r = $_GET['grid_r'];
+     }
+ else{ $grid_r = 8;}
+ # number of columns of the image grid
+ if (isset($_GET['grid_c'])){
+      $grid_c = $_GET['grid_c'];
+    }
+ else{ $grid_c = 15;}
+ # page
+ if (isset($_GET['page'])){
+      $page = $_GET['page'];
+     }
+ else{ $page = 1;}
 
  // construct reference url from the variable and construct query to count data from filters
  $query_selection = "";
@@ -34,7 +50,13 @@
          }
      }
  }
- $url_from_get_array .= "page=";
+ 
+ $final_url = $url_from_get_array . "grid_r=";
+ $final_url .= $grid_r;
+ $final_url .= "&grid_c=";
+ $final_url .= $grid_c;
+ $final_url .= "&page=";
+
  $query_selection = substr($query_selection, 0, -4);
  $query = "SELECT COUNT(*) FROM $table ";
 
@@ -48,11 +70,7 @@
  $total_info = "<p align="."left".">".$total." records found</p>";
 
  # Pagination variables
- $limit = 120;
- if (isset($_GET['page'])){
-      $page = $_GET['page'];
-     }
- else{ $page = 1;}
+ $limit = $grid_r * $grid_c;
  $start = ($page - 1) * $limit;
  $pages = ceil($total/$limit);
  $Previous = $page - 1;
@@ -76,8 +94,8 @@
 
  // Select unique combinations of labels
  $options = "";
- $new_url_from_get_array = $url_from_get_array . $first;
- $url_single = $url_from_get_array . $page;
+ $new_url_from_get_array = $final_url . $first;
+ $url_single = $final_url . $page;
  $log = array();
  foreach($filterable_columns as $label => $label_values){
     $query = "SELECT DISTINCT($label) FROM $table";
@@ -165,6 +183,10 @@
   display:flex;
   justify-content:space-between;
   } 
+  .flex-box > div {
+     display: flex;
+     justify-content: center;
+}
   </style>
  </head>
 <body onload="scrollToBottom()">
@@ -192,7 +214,7 @@
                     <?php } else { ?>
                          <li class="page-item">
                     <?php } ?>                    
-                    <a href="<?= $url_from_get_array . $Previous; ?>" aria-label="Previous">
+                    <a href="<?= $final_url . $Previous; ?>" aria-label="Previous">
                          <span aria-hidden="true">&laquo; Previous</span>
                     </a>
                     </li>
@@ -200,18 +222,18 @@
                     <?php if( ($page-$link) <= $first+1 ){ ?>
                          <?php for($i = $first; $i <= $page; $i++){?>                         
                               <?php if($i == $page){?>
-                                   <li class="page-item active"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item active"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php } else {?>
-                                   <li class="page-item"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php }?>                    
                          <?php } ?>
                     <?php } else{ ?>
-                         <li class="page-item"><a href="<?= $url_from_get_array . $first; ?>"><?= $first; ?></a></li>
+                         <li class="page-item"><a href="<?= $final_url . $first; ?>"><?= $first; ?></a></li>
                          <?php for($i = ($page-$link); $i <= $page; $i++){?>                         
                               <?php if($i == $page){?>
-                                   <li class="page-item active"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item active"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php } else {?>
-                                   <li class="page-item"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php }?>                    
                          <?php } ?>
                     <?php } ?>
@@ -219,21 +241,21 @@
                     <?php if( ($page+$link) >= $last-1 ){ ?>
                          <?php for($i = $page+1; $i <= $last; $i++){?>                         
                               <?php if($i == $page){?>
-                                   <li class="page-item active"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item active"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php } else {?>
-                                   <li class="page-item"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php }?>                    
                          <?php } ?>
                     <?php } else{ ?>
                          
                          <?php for($i = $page+1; $i <= ($page+$link); $i++){?>                         
                               <?php if($i == $page){?>
-                                   <li class="page-item active"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item active"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php } else {?>
-                                   <li class="page-item"><a href="<?= $url_from_get_array . $i; ?>"><?= $i; ?></a></li>
+                                   <li class="page-item"><a href="<?= $final_url . $i; ?>"><?= $i; ?></a></li>
                               <?php }?>                    
                          <?php } ?>
-                         <li class="page-item"><a href="<?= $url_from_get_array . $last; ?>"><?= $last; ?></a></li>
+                         <li class="page-item"><a href="<?= $final_url . $last; ?>"><?= $last; ?></a></li>
                     <?php } ?>
                     
                     <?php if($page == $last){ ?>
@@ -241,7 +263,7 @@
                     <?php } else { ?>
                          <li class="page-item">
                     <?php } ?>    
-                         <a href="<?= $url_from_get_array . $Next; ?>" aria-label="Next">
+                         <a href="<?= $final_url . $Next; ?>" aria-label="Next">
                               <span aria-hidden="true">Next &raquo;</span>
                          </a>
                     </li>
@@ -262,7 +284,7 @@
    <tr>
    
    <?php $line_cont = 1;
-   $line = 15;
+   $line = $grid_c;
    $id_cont = 0;?>
    <?php for($id = 0; $id < count($images); $id++){
         $id_cont++;?>
@@ -285,10 +307,26 @@
  </table> 
 
  <div class="flex-box">
+ <div>
  <?php echo $total_info; ?>
+ </div>
+
+ <div>
+ <p>Grid: </p>
+ <input id="grid_r" type="number" min="1" max="100" 
+          placeholder="<?php echo $grid_r; ?>" required> 
+ <p> X </p>
+ <input id="grid_c" type="number" min="1" max="100" 
+          placeholder="<?php echo $grid_c; ?>" required>  
+ <button onclick="go2Page();">Go</button>
+ </div>
+
+ <div>
  <form name="imageSubmit" id="imageSubmit" >
  <input type="button" value="Edit Selected" data-target="#add_data_Modal" class="edit_data" style="float: right;"/>
  </form>
+ </div>
+
 </div>
 
 
@@ -339,10 +377,24 @@
 scrollingElement = (document.scrollingElement || document.body)
 function go2Page() 
 { 
+    var c = document.getElementById("grid_c").value;
+    if (! $.isNumeric(c)){
+     var c = document.getElementById("grid_c").placeholder;
+    }
+    var r = document.getElementById("grid_r").value;
+    if (! $.isNumeric(r)){
+     var r = document.getElementById("grid_r").placeholder;
+    }
     var pn = document.getElementById("pn").value; 
     // Check if pn is between the max and min. 
   pn = ((pn><?php echo $last; ?>)?<?php echo $last; ?>:((pn<1)?1:pn)); 
-  window.location.href = '<?php echo $url_from_get_array; ?>' + pn; 
+
+  var final_url = '<?php echo $url_from_get_array; ?>' + 'grid_r=';
+  final_url = final_url + r;
+  final_url = final_url + '&grid_c=';
+  final_url = final_url + c;
+  final_url = final_url + '&page=';
+  window.location.href = final_url + pn; 
 } 
 function scrollToBottom () {
    scrollingElement.scrollTop = scrollingElement.scrollHeight;
